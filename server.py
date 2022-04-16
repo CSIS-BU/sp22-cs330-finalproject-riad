@@ -1,7 +1,7 @@
 import sys
 
 # Some kind of dict here to keep track of each player's correct number?
-# Maybe index could be the socket id, value as the correct number
+# Maybe index could be the socket id, value as an array[3] {correctNumber, rangeStart, rangeEnd}?
 
 def generate_user_number():
 	"""Function to generate a number for the connected user."""

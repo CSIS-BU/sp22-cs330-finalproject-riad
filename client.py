@@ -1,7 +1,10 @@
 import sys
 
+# Variables here to remember the minimum and maximum range
+# Maybe another to remember our previous inputs, so we don't waste more guesses by repeating guesses.
+
 def getUserInput():
-	"""Function geto user input?"""
+	"""Function to get user input?"""
 
 	# Read the user's input
 	# Make sure it's within the expected number range
