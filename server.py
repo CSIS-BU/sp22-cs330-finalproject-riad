@@ -1,14 +1,14 @@
 import sys
 import socket
 import shared
-import json
+import random
 from shared import PacketType, receivePacket, send, receive
+
+clients = {}
+
 
 # Some kind of dict here to keep track of each player's correct number?
 # Maybe index could be the socket id, value as another dict? {int correctNumber, int rangeStart, int rangeEnd, list guessHistory}?
-def generate_user_number():
-	"""Function to generate a number for the connected user."""
-	pass
 
 def doServer(server_port):
 	"""Connection logic handler."""
@@ -28,8 +28,20 @@ def doServer(server_port):
 					# A client has connected, ask them for the number range they want.
 					# It should still be within our predefined values in config.
 					send(client, PacketType.ASK_CLIENT_MIN_MAX, shared.MIN_NUMBER, shared.MAX_NUMBER)
-
+					print("a")
+					
+					#"""
+					# The client has sent back the min and max they want.
 					data = receivePacket(client, PacketType.GIVE_SERVER_MIN_MAX)
+					# Verify what we got to be sure it fits our bounds. If not, kill the connection.
+					if (not data[0] or data[0] < shared.MIN_NUMBER) or (not data[1] or data[1] > shared.MAX_NUMBER):
+						print("Client sent invalid min & max.")
+						client.close()
+					else:
+						clients[client] = {random.randint(data[0], data[1])}
+					#"""
+
+
 		except KeyboardInterrupt:
 			print("Server cancelled. Exiting.")
 			server.close()

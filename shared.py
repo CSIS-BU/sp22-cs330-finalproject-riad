@@ -35,8 +35,14 @@ def receive(skt):
 		got = skt.recv(MAX_PACKET_SIZE)
 		if got == b"":
 			break
-		data += got
-
+		elif got[-1] == 0:
+			#print("null check")
+			data += got[:-1]
+			break
+		else:
+			data += got
+	
+	#print(data)
 	data = json.loads(data)
 	packet = data["packet"]
 
@@ -67,4 +73,7 @@ def send(skt, packet, *args):
 		"packet": packet.value,
 		"args": list(args)
 	}
-	skt.sendall(bytes(json.dumps(data), "utf-8"))
+	data = json.dumps(data)
+
+	skt.sendall(bytes(data, "utf-8"))
+	skt.sendall(b"\x00")

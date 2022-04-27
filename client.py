@@ -1,7 +1,6 @@
 import sys
 import socket
 import shared
-import json
 from shared import *
 
 # Variables here to remember the minimum and maximum range
@@ -20,6 +19,7 @@ def getUserInput():
 
 	pass
 
+
 def promptNumber(prompt):
 	while True:
 		res = input(prompt)
@@ -29,7 +29,8 @@ def promptNumber(prompt):
 			return res
 		except ValueError:
 			print("\tInvalid input, please input a number.")
-	
+
+
 def establishMinAndMax(min, max):
 	# Get user's desired minimum number
 	while True:
@@ -49,6 +50,7 @@ def establishMinAndMax(min, max):
 
 	# Store the result
 	print("Your minimum and maximum bounds are {} and {}".format(minimum_number, maximum_number))
+
 
 def doClient(server_port):
 	"""Connection to server."""
