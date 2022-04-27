@@ -2,7 +2,7 @@ import sys
 import socket
 import shared
 import json
-from shared import PacketType, send, receive
+from shared import PacketType, receivePacket, send, receive
 
 # Some kind of dict here to keep track of each player's correct number?
 # Maybe index could be the socket id, value as another dict? {int correctNumber, int rangeStart, int rangeEnd, list guessHistory}?
@@ -10,7 +10,7 @@ def generate_user_number():
 	"""Function to generate a number for the connected user."""
 	pass
 
-def do_server(server_port):
+def doServer(server_port):
 	"""Connection logic handler."""
 
 	# Connection handling here, the random guessing part will likely be handled in separate function calls.
@@ -29,15 +29,7 @@ def do_server(server_port):
 					# It should still be within our predefined values in config.
 					send(client, PacketType.ASK_CLIENT_MIN_MAX, shared.MIN_NUMBER, shared.MAX_NUMBER)
 
-					"""
-					while True:
-						data = client.recv(config.MAX_PACKET_SIZE)
-						if not data:
-							break
-						print("Got data")
-						print(data)
-						sys.stdout.flush()
-					"""
+					data = receivePacket(client, PacketType.GIVE_SERVER_MIN_MAX)
 		except KeyboardInterrupt:
 			print("Server cancelled. Exiting.")
 			server.close()
@@ -55,7 +47,7 @@ def main():
 		sys.exit("Usage: python3 server.py [Server Port]")
 	
 	server_port = int(sys.argv[1])
-	do_server(server_port)
+	doServer(server_port)
 
 
 if __name__ == "__main__":

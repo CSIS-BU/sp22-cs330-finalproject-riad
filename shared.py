@@ -51,7 +51,7 @@ def receive(skt):
 	return packet, data["args"]
 
 
-def receive_packet(skt, expected_packet):
+def receivePacket(skt, expected_packet):
 	packet, data = receive(skt)
 	if packet != expected_packet:
 		print("-----------------------------------------")

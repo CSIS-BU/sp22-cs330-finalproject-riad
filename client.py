@@ -30,8 +30,27 @@ def promptNumber(prompt):
 		except ValueError:
 			print("\tInvalid input, please input a number.")
 	
+def establishMinAndMax(min, max):
+	# Get user's desired minimum number
+	while True:
+		minimum_number = promptNumber("Choose a minimum number between {} and {}: ".format(min, max - 2))
+		if minimum_number < min or minimum_number > max - 2:
+			print("\tPlease select a number between {} and {}".format(min, max - 2))
+		else:
+			break
 
-def do_client(server_port):
+	# Get user's desired maximum number
+	while True:
+		maximum_number = promptNumber("Choose a maximum number between {} and {}: ".format(minimum_number + 1, max))
+		if maximum_number < minimum_number + 1 or maximum_number > max:
+			print("\tPlease select a number between {} and {}".format(minimum_number + 1, max))
+		else:
+			break
+
+	# Store the result
+	print("Your minimum and maximum bounds are {} and {}".format(minimum_number, maximum_number))
+
+def doClient(server_port):
 	"""Connection to server."""
 
 	# Connection handling here, maybe another function for receiving user input?
@@ -43,30 +62,12 @@ def do_client(server_port):
 
 		#############################################################################################################################
 		# We should get a message from the server asking us to pick a number with some bounds.
-		data = receive_packet(client, PacketType.ASK_CLIENT_MIN_MAX)
+		data = receivePacket(client, PacketType.ASK_CLIENT_MIN_MAX)
 		print("Server enforced min & max: {} & {}".format(data[0], data[1]))
+		establishMinAndMax(data[0], data[1])
 		
-		# Get user's desired minimum number
-		while True:
-			min = promptNumber("Choose a minimum number between {} and {}: ".format(data[0], data[1] - 1))
-			if min < data[0] or min > data[1] - 1:
-				print("\tPlease select a number between {} and {}".format(data[0], data[1] - 1))
-			else:
-				break
-
-		# Get user's desired maximum number
-		while True:
-			max = promptNumber("Choose a maximum number between {} and {}: ".format(min + 1, data[1]))
-			if max < min + 1 or max > data[1]:
-				print("\tPlease select a number between {} and {}".format(min + 1, data[1]))
-			else:
-				break
-		
-		# Store the result and reply to the server.
-		minimum_number = min
-		maximum_number = max
-		print("Your minimum and maximum bounds are {} and {}".format(minimum_number, maximum_number))
-		#send(client, PacketType.GIVE_SERVER_MIN_MAX, minimum_number, maximum_number)
+		# Reply to the server.
+		send(client, PacketType.GIVE_SERVER_MIN_MAX, minimum_number, maximum_number)
 		#############################################################################################################################
 
 		"""
@@ -85,7 +86,7 @@ def main():
 		sys.exit("Usage: python3 client.py [Server Port]")
 	
 	server_port = int(sys.argv[1])
-	do_client(server_port)
+	doClient(server_port)
 
 
 if __name__ == "__main__":
