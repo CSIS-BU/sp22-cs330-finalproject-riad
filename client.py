@@ -1,10 +1,13 @@
 import sys
 import socket
-
-SERVER_IP = "127.0.0.1"
+import shared
+import json
+from shared import PacketType, send, receive
 
 # Variables here to remember the minimum and maximum range
 # Maybe another to remember our previous inputs, so we don't waste more guesses by repeating guesses.
+
+		
 
 def getUserInput():
 	"""Function to get user input?"""
@@ -22,12 +25,26 @@ def do_client(server_port):
 	# It would be cleaner that way.
 
 	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client:
-		client.connect((SERVER_IP, server_port))
-		print("Connected to {}:{}".format(SERVER_IP, server_port))
+		client.connect((shared.SERVER_IP, server_port))
+		print("Connected to {}:{}".format(shared.SERVER_IP, server_port))
 
+		# We should get a message from the server asking us to pick a number with some bounds.
+		packet, data = receive(client)
+		
+
+		"""
+		data = client.recv(config.MAX_PACKET_SIZE)
+		if (data != PacketType.ASK_CLIENT_MIN_MAX.value):
+			raise Exception("Expected ASK_CLIENT_MIN_MAX")
+		"""
+		
+		# Respond to the server with a number.
+
+		"""
 		code = client.sendall(b"Hello")
 		if code == 0:
 			raise RuntimeError("Socket disconnected")
+		"""
 
 	print("Connection closed")
 
