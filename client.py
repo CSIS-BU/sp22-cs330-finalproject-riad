@@ -2,11 +2,13 @@ import sys
 import socket
 import shared
 import json
-from shared import PacketType, send, receive
+from shared import *
 
 # Variables here to remember the minimum and maximum range
 # Maybe another to remember our previous inputs, so we don't waste more guesses by repeating guesses.
 
+minimum_number = None
+maximum_number = None
 		
 
 def getUserInput():
@@ -18,6 +20,17 @@ def getUserInput():
 
 	pass
 
+def promptNumber(prompt):
+	while True:
+		res = input(prompt)
+
+		try:
+			res = int(res)
+			return res
+		except ValueError:
+			print("\tInvalid input, please input a number.")
+	
+
 def do_client(server_port):
 	"""Connection to server."""
 
@@ -28,17 +41,33 @@ def do_client(server_port):
 		client.connect((shared.SERVER_IP, server_port))
 		print("Connected to {}:{}".format(shared.SERVER_IP, server_port))
 
+		#############################################################################################################################
 		# We should get a message from the server asking us to pick a number with some bounds.
-		packet, data = receive(client)
+		data = receive_packet(client, PacketType.ASK_CLIENT_MIN_MAX)
+		print("Server enforced min & max: {} & {}".format(data[0], data[1]))
 		
+		# Get user's desired minimum number
+		while True:
+			min = promptNumber("Choose a minimum number between {} and {}: ".format(data[0], data[1] - 1))
+			if min < data[0] or min > data[1] - 1:
+				print("\tPlease select a number between {} and {}".format(data[0], data[1] - 1))
+			else:
+				break
 
-		"""
-		data = client.recv(config.MAX_PACKET_SIZE)
-		if (data != PacketType.ASK_CLIENT_MIN_MAX.value):
-			raise Exception("Expected ASK_CLIENT_MIN_MAX")
-		"""
+		# Get user's desired maximum number
+		while True:
+			max = promptNumber("Choose a maximum number between {} and {}: ".format(min + 1, data[1]))
+			if max < min + 1 or max > data[1]:
+				print("\tPlease select a number between {} and {}".format(min + 1, data[1]))
+			else:
+				break
 		
-		# Respond to the server with a number.
+		# Store the result and reply to the server.
+		minimum_number = min
+		maximum_number = max
+		print("Your minimum and maximum bounds are {} and {}".format(minimum_number, maximum_number))
+		#send(client, PacketType.GIVE_SERVER_MIN_MAX, minimum_number, maximum_number)
+		#############################################################################################################################
 
 		"""
 		code = client.sendall(b"Hello")
