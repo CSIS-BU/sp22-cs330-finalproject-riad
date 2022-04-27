@@ -15,16 +15,17 @@ def getUserInput():
 
 	pass
 
-def client(server_port):
+def do_client(server_port):
 	"""Connection to server."""
 
 	# Connection handling here, maybe another function for receiving user input?
 	# It would be cleaner that way.
 
-	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-		s.connect(SERVER_IP, server_port)
+	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client:
+		client.connect((SERVER_IP, server_port))
+		print("Connected to {}:{}".format(SERVER_IP, server_port))
 
-		code = s.sendall("Hello")
+		code = client.sendall(b"Hello")
 		if code == 0:
 			raise RuntimeError("Socket disconnected")
 
@@ -38,7 +39,7 @@ def main():
 		sys.exit("Usage: python3 client.py [Server Port]")
 	
 	server_port = int(sys.argv[1])
-	client(server_port)
+	do_client(server_port)
 
 
 if __name__ == "__main__":
