@@ -24,6 +24,10 @@ class PacketType(Enum):
 	#NONE = auto()
 	ASK_CLIENT_MIN_MAX = auto()
 	GIVE_SERVER_MIN_MAX = auto()
+	START_GUESSING = auto()
+	GUESS = auto()
+	GUESS_INCORRECT = auto()
+	GUESS_CORRECT = auto()
 
 
 #########################################

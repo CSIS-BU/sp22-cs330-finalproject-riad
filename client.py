@@ -8,17 +8,21 @@ from shared import *
 
 minimum_number = None
 maximum_number = None
-		
+guess_history = []
 
-def getUserInput():
-	"""Function to get user input?"""
-
-	# Read the user's input
-	# Make sure it's within the expected number range
-	# If acceptable, return back to client
-
-	pass
-
+def getGuess():
+	while True:
+		num = promptNumber("Guess between {} and {}: ".format(minimum_number, maximum_number))
+		if num < minimum_number:
+			print("\tThat's below the minimum!")
+		elif num > maximum_number:
+			print("\tThat's above the maximum!")
+		elif num in guess_history:
+			print("\tYou've already tried that number!")
+		else:
+			# All good.
+			guess_history.append(num)
+			return num
 
 def promptNumber(prompt):
 	while True:
@@ -32,6 +36,8 @@ def promptNumber(prompt):
 
 
 def establishMinAndMax(min, max):
+	global minimum_number, maximum_number
+
 	# Get user's desired minimum number
 	while True:
 		minimum_number = promptNumber("Choose a minimum number between {} and {}: ".format(min, max - 2))
@@ -71,12 +77,22 @@ def doClient(server_port):
 		# Reply to the server.
 		send(client, PacketType.GIVE_SERVER_MIN_MAX, minimum_number, maximum_number)
 		#############################################################################################################################
-
-		"""
-		code = client.sendall(b"Hello")
-		if code == 0:
-			raise RuntimeError("Socket disconnected")
-		"""
+		# We should get a message saying we can start now.
+		receivePacket(client, PacketType.START_GUESSING)
+		# Let's begin the guessing!
+		
+		while True:
+			num = getGuess()
+			# Send our guess.
+			send(client, PacketType.GUESS, num)
+			# Wait for the server's response.
+			packet, data = receive(client)
+			if packet == PacketType.GUESS_CORRECT:
+				print("We got it!")
+				break
+			elif packet == PacketType.GUESS_INCORRECT:
+				print("Nope... Try again!")
+		
 
 	print("Connection closed")
 
