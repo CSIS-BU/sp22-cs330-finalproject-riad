@@ -19,7 +19,7 @@ def handleClient(client, address):
 		data = receivePacket(client, PacketType.GIVE_SERVER_MIN_MAX)
 		# Verify what we got to be sure it fits our bounds. If not, kill the connection.
 		if data[0] < shared.MIN_NUMBER or data[1] > shared.MAX_NUMBER:
-			print("Client sent invalid min & max.")
+			print("Client [${}] sent invalid min & max.".format(client.fileno()))
 			client.close()
 		else:
 			# They're valid.
@@ -29,7 +29,7 @@ def handleClient(client, address):
 				"maximum": data[1],
 				"guessHistory": []
 			}
-			print("Client {} chose {} and {} as their min & max.".format(client.fileno(), data[0], data[1]))
+			print("Client [{}] chose {} and {} as their min & max.".format(client.fileno(), data[0], data[1]))
 		
 		# Tell them to start guessing.
 		send(client, PacketType.START_GUESSING)
@@ -45,14 +45,14 @@ def handleClient(client, address):
 			clientData["guessHistory"].append(data[0])
 
 			if data[0] == clientData["correctNumber"]:
-				print("They got it right! It only took {} guesses.".format(len(clientData["guessHistory"])))
+				print("Client {} got it right! It only took {} guesses.".format(client.fileno(), len(clientData["guessHistory"])))
 				send(client, PacketType.GUESS_CORRECT)
 				break
 			elif data[0] < clientData["minimum"]:
-				print("They sent a number below their previously defined minimum, despite safeguards. Kill the connection.")
+				print("Client {} sent a number below their previously defined minimum, despite safeguards. Kill the connection.".format(client.fileno()))
 				client.close()
 			elif data[0] > clientData["maximum"]:
-				print("They sent a number above their previously defined maximum, despite safeguards. Kill the connection.")
+				print("Client {} sent a number above their previously defined maximum, despite safeguards. Kill the connection.".format(client.fileno()))
 				client.close()
 			else:
 				# Incorrect guess.
