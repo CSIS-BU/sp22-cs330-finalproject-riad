@@ -21,7 +21,7 @@ MAX_PACKET_SIZE = 1024
 #########################################
 @unique
 class PacketType(Enum):
-	#NONE = auto()
+	NONE = auto()
 	ASK_CLIENT_MIN_MAX = auto()
 	GIVE_SERVER_MIN_MAX = auto()
 	START_GUESSING = auto()
@@ -46,7 +46,11 @@ def receive(skt):
 		else:
 			data += got
 	
-	#print(data)
+	if (data == b""):
+		print("Got empty data.")
+		return PacketType.NONE, []
+	
+	#print("receiving:", data)
 	data = json.loads(data)
 	packet = data["packet"]
 

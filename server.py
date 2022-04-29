@@ -9,7 +9,6 @@ clients = {}
 
 def handleClient(client, address):
 	with client:
-		print(client)
 		# A client has connected, ask them for the number range they want.
 		# It should still be within our predefined values in config.
 		send(client, PacketType.ASK_CLIENT_MIN_MAX, shared.MIN_NUMBER, shared.MAX_NUMBER)
@@ -37,8 +36,9 @@ def handleClient(client, address):
 		while True:
 			# We should be receiving guesses now.
 			data = receivePacket(client, PacketType.GUESS)
-			if not data[0]:
+			if len(data) != 1:
 				# Invalid response. Close the connection.
+				print("Client {} sent an invalid guess response.".format(client.fileno()))
 				client.close()
 			
 			clientData = clients[client]

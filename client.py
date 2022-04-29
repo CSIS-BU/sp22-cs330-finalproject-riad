@@ -92,6 +92,9 @@ def doClient(server_port):
 				break
 			elif packet == PacketType.GUESS_INCORRECT:
 				print("Nope... Try again!")
+			else:
+				# print("Received unknown packet...")
+				raise RuntimeError("Received unknown packet!")
 		
 
 	print("Connection closed")
